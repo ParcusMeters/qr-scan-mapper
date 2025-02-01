@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.3.0",
+    "@prisma/nextjs-monorepo-workaround-plugin": "^6.3.0",
     "@react-google-maps/api": "^2.20.5",
     "@vercel/functions": "^1.6.0",
     "class-variance-authority": "^0.7.1",
