@@ -27,8 +27,8 @@ export async function GET(request: Request, { params }: { params: { qrCodeId: st
       },
     })
 
-    // Create the response
-    const response = NextResponse.json({ success: true, scan })
+    // Create the response with redirect
+    const response = NextResponse.redirect(new URL("/map", request.url))
 
     // Set the hasScanned cookie
     response.cookies.set("hasScanned", "true", {
