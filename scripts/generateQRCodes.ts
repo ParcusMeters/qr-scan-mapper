@@ -8,14 +8,14 @@ async function generateQRCodes(count: number) {
   for (let i = 0; i < count; i++) {
     const qrCode = await prisma.qRCode.create({
       data: {
-        url: `https://qr-scan-mapper-tau.vercel.app/api/scan/placeholder`,
+        url: `https://qr-scan-mapper-tau.vercel.app/scan/placeholder`,
       },
     })
 
     const updatedQRCode = await prisma.qRCode.update({
       where: { id: qrCode.id },
       data: {
-        url: `https://qr-scan-mapper-tau.vercel.app/api/scan/${qrCode.id}`,
+        url: `https://qr-scan-mapper-tau.vercel.app/scan/${qrCode.id}`,
       },
     })
 

@@ -8,6 +8,9 @@ const prisma = new PrismaClient()
 export async function GET(request: Request, { params }: { params: { qrCodeId: string } }) {
   const geo = geolocation(request)
   const ip = request.headers.get("x-forwarded-for") || "Unknown"
+  const searchParams = new URL(request.url).searchParams
+  const latitude = searchParams.get("latitude")
+  const longitude = searchParams.get("longitude")
 
   try {
     const qrCode = await prisma.qRCode.findUnique({
@@ -18,11 +21,12 @@ export async function GET(request: Request, { params }: { params: { qrCodeId: st
       return NextResponse.json({ error: "Invalid QR code" }, { status: 400 })
     }
 
+    // Use precise location if available, otherwise fall back to IP-based location
     const scan = await prisma.scan.create({
       data: {
         ip,
-        latitude: Number(geo.latitude) || 0,
-        longitude: Number(geo.longitude) || 0,
+        latitude: latitude ? Number(latitude) : Number(geo.latitude) || 0,
+        longitude: longitude ? Number(longitude) : Number(geo.longitude) || 0,
         qrCodeId: qrCode.id,
       },
     })
