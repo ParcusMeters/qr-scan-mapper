@@ -8,7 +8,7 @@ async function generateQRCodes(count: number) {
   for (let i = 0; i < count; i++) {
     const qrCode = await prisma.qRCode.create({
       data: {
-        url: `${process.env.NEXT_PUBLIC_API_URL}/api/scan/${Date.now()}-${i}`,
+        url: `https://qr-scan-mapper-tau.vercel.app/api/scan/${Date.now()}-${i}`,
       },
     })
 
