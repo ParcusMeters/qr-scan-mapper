@@ -5,7 +5,7 @@ export default function ScanPage({
 }: {
     params: { qrCodeId: string }
 }) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://qr-scan-mapper-tau.vercel.app"
+    const baseUrl = "https://qr-scan-mapper-tau.vercel.app"
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center p-24">

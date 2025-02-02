@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
-import { geolocation } from "@vercel/functions"
 import { cookies } from "next/headers"
 
 const prisma = new PrismaClient()
@@ -11,9 +10,9 @@ export async function GET(request: Request, { params }: { params: { qrCodeId: st
   const latitude = searchParams.get("latitude")
   const longitude = searchParams.get("longitude")
 
-  // Require coordinates
+  // If coordinates aren't available, redirect back to the scan page
   if (!latitude || !longitude) {
-    return NextResponse.json({ error: "Location coordinates required" }, { status: 400 })
+    return NextResponse.redirect(new URL(`/scan/${params.qrCodeId}`, request.url))
   }
 
   try {
