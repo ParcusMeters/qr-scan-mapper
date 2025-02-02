@@ -8,9 +8,10 @@ async function generateQRCodes(count: number) {
   for (let i = 0; i < count; i++) {
     const qrCode = await prisma.qRCode.create({
       data: {
-        url: `https://qr-scan-mapper-tau.vercel.app/api/scan/$`,
+        url: `https://qr-scan-mapper-tau.vercel.app/api/scan/placeholder`,
       },
     })
+
     const updatedQRCode = await prisma.qRCode.update({
       where: { id: qrCode.id },
       data: {
@@ -18,7 +19,7 @@ async function generateQRCodes(count: number) {
       },
     })
 
-    const qrCodeDataUrl = await QRCode.toDataURL(qrCode.url)
+    const qrCodeDataUrl = await QRCode.toDataURL(updatedQRCode.url)
     const qrCodeBase64 = qrCodeDataUrl.split(",")[1]
     fs.writeFileSync(`./public/qrcodes/${qrCode.id}.png`, qrCodeBase64, "base64")
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
 import { geolocation } from "@vercel/functions"
+import { cookies } from "next/headers"
 
 const prisma = new PrismaClient()
 
@@ -26,7 +27,18 @@ export async function GET(request: Request, { params }: { params: { qrCodeId: st
       },
     })
 
-    return NextResponse.json({ success: true, scan })
+    // Create the response
+    const response = NextResponse.json({ success: true, scan })
+
+    // Set the hasScanned cookie
+    response.cookies.set("hasScanned", "true", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/"
+    })
+
+    return response
   } catch (error) {
     console.error("Error saving scan:", error)
     return NextResponse.json({ error: "Failed to save scan" }, { status: 500 })
