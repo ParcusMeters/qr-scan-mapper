@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 interface LocationHandlerProps {
     qrCodeId: string
@@ -8,6 +8,8 @@ interface LocationHandlerProps {
 }
 
 export default function LocationHandler({ qrCodeId, baseUrl }: LocationHandlerProps) {
+    const [error, setError] = useState<string | null>(null)
+
     useEffect(() => {
         const getLocationAndRedirect = () => {
             if ("geolocation" in navigator) {
@@ -18,25 +20,50 @@ export default function LocationHandler({ qrCodeId, baseUrl }: LocationHandlerPr
                         window.location.href = url
                     },
                     (error) => {
-                        // Error or denied - redirect without coordinates (will use IP fallback)
-                        const url = `${baseUrl}/api/scan/${qrCodeId}`
-                        window.location.href = url
+                        // Handle specific errors
+                        let errorMessage = "Unable to get your location. "
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage += "Please enable location access and try again."
+                                break
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage += "Location information is unavailable."
+                                break
+                            case error.TIMEOUT:
+                                errorMessage += "Location request timed out."
+                                break
+                            default:
+                                errorMessage += "An unknown error occurred."
+                        }
+                        setError(errorMessage)
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
                     }
                 )
             } else {
-                // Geolocation not supported - redirect without coordinates (will use IP fallback)
-                const url = `${baseUrl}/api/scan/${qrCodeId}`
-                window.location.href = url
+                setError("Geolocation is not supported by your browser")
             }
         }
 
         getLocationAndRedirect()
     }, [qrCodeId, baseUrl])
 
-    return (
-        <div className="flex min-h-screen flex-col items-center justify-center p-24">
-            <h1 className="text-2xl font-bold mb-4">Requesting Location Access</h1>
-            <p className="text-gray-600">Please allow location access for better accuracy...</p>
-        </div>
-    )
+    if (error) {
+        return (
+            <div className="text-red-500 text-center">
+                <p>{error}</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                    Try Again
+                </button>
+            </div>
+        )
+    }
+
+    return null // Loading state is handled by parent
 } 
