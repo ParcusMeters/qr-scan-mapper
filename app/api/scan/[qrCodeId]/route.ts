@@ -4,13 +4,13 @@ import { geolocation } from "@vercel/functions"
 
 const prisma = new PrismaClient()
 
-export async function GET(request: Request, { params }: { params: { qrCodeUrl: string } }) {
+export async function GET(request: Request, { params }: { params: { qrCodeId: string } }) {
   const geo = geolocation(request)
   const ip = request.headers.get("x-forwarded-for") || "Unknown"
 
   try {
     const qrCode = await prisma.qRCode.findUnique({
-      where: { url: params.qrCodeUrl },
+      where: { id: params.qrCodeId },
     })
 
     if (!qrCode) {
